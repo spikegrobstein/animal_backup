@@ -1,6 +1,9 @@
 # AnimalBackup
 
-TODO: Write a gem description
+A backup script designed around dead-simple deployment, simple configuration and fast backups to S3.
+All backups are streamed directly to S3 with no intermediary file.
+
+This is a work-in-progress. Use at your own risk. Yada, yada.
 
 ## Installation
 
@@ -18,7 +21,41 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+This is some experimental shit.
+
+### Using global config:
+
+    # configure the gem
+    AnimalBackup::Config.configure 'backup.example.com', ACCESS_KEY, SECRET_ACCESS_KEY
+
+    # define backup targets and backup using global configuration
+    AnimalBackup::Config.backup! do
+      backup_dir :home, '/home'
+      backup_dir :etc, '/etc'
+      backup_dir :log, '/var/log'
+
+      backup_dir :music, '/mnt/music', :_gzip => false
+
+      backup_cmd :mysql, 'mysqldump', '--username :username --password=:password --all-databases', :username => USERNAME, :password => PASSWORD, :_gzip => true
+    end
+
+    # create a new configuration and backup using it
+    AnimalBackup::Config.new('backup.example.com', ACCESS_KEY, SECRET_ACCESS_KEY).backup! do |c|
+      c.backup_dir :home, '/home'
+    end
+
+    # create a new configuration and backup using it, ad-hoc
+    config = AnimalBackup::Config.new('backup.example.com', ACCESS_KEY, SECRET_ACCESS_KEY)
+    config.backup do |c|
+      c.backup_dir :home, '/home'
+    end
+
+    config.backup_dir :etc, '/etc'
+
+    config.backup! # execute the backup
+
+    # different ways of configuring it
+
 
 ## Contributing
 
